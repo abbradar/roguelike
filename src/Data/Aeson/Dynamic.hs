@@ -17,7 +17,7 @@ import Data.Text (Text)
 import Data.Aeson
 import Data.Bimap (Bimap)
 import qualified Data.Bimap as B
-import Data.IndexedSet (IndexedSet)
+import Data.IndexedSet (IndexedSet, IndexKey(..))
 import qualified Data.IndexedSet as I
 import qualified Data.HashMap as H
 

@@ -26,6 +26,10 @@ executable roguelike
                      , aeson
                      , linear
                      , MonadRandom
+                     , lens
+                     , containers
+                     , unordered-containers
+                     , multimap
   default-extensions:  ViewPatterns
                      , GeneralizedNewtypeDeriving
                      , TemplateHaskell

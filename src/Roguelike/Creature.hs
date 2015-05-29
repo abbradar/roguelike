@@ -1,8 +1,10 @@
 module Roguelike.Creature where
 
-import Roguelike.ID
 import Data.Aeson
 import Linear.V2
+
+import Roguelike.ID
+import Roguelike.Event
 
 -- Physical properties of a creature n entity
 
@@ -18,25 +20,10 @@ data Creature = Creature { _visionRadius :: Radius
                          , _inventory :: [Item]
                          , _hand :: Maybe Item
                          }
-              deriving (Show, Read, Eq)
+              deriving (Show)
 
 deriveJSON defaultOptions { fieldLabelModifier = tail } ''Creature
 makeLenses ''Creature
-
-data CreatureAddress = Other ID | Myself
-                   deriving (Show, Eq)
-
-type Damage = Int
-
-data Event = Appeared ID Point
-           | Disappeared ID Point
-           | Moved CreatureAddress Point
-           | Striked CreatureAddress CreatureAddress (Maybe Damage)
-           | Slain CreatureAddress
-           | Heard CreatureAddress Phrase
-           | Shealthed CreatureAddress
-           | DrawnOut CreatureAddress Item
-           deriving (Show, Eq)
 
 updateCreature :: Creature -> Event -> Creature
 updateCreature e _ | e ^. wounds <= 0 = error "slain Creature should not get any Events"
