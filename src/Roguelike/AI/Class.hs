@@ -1,7 +1,9 @@
 module Roguelike.AI.Class where
 
 import Roguelike.Event
-import Roguelike.Entity
+import Roguelike.Creature
+import Roguelike.Action
+import Roguelike.SubjectiveWorld
 
 instance AI a where
-  think :: Entity -> TurnStatus -> a -> Event -> ([Action], a)
+  think :: SubjectiveWorld -> Creature -> TurnStatus -> a -> Event -> ([Action], a)

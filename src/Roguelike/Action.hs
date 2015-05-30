@@ -37,7 +37,6 @@ data Phrase = Follow
             | Stand
             deriving (Show, Read, Eq)
 
--- For ease of tracking attacks
 data AttackAction = StandardAttack EntityID
                -- | ChargeAttack Point EntityID
                -- | SwiftAttack EntityID

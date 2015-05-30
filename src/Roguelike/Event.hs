@@ -17,9 +17,10 @@ data KnownEntity = KnownCreature
                  | KnownItem Item
                  deriving (Show, FromJSON, ToJSON)
 
+-- TODO: Maybe send only relative movements; let's conceal the real location!
 data Event = Appeared LocalID Point KnownEntity
            | Updated LocalID KnownEntity
-           | Disappeared LocalID Point
+           | Disappeared LocalID
            | Moved CreatureAddress Point
            | Striked CreatureAddress CreatureAddress (Maybe Damage)
            | Slain CreatureAddress
