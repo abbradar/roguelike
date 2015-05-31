@@ -7,11 +7,17 @@ import Control.Lens
 import GHC.Generics (Generic)
 import Data.Default.Generics
 
+import Roguelike.Point
 import Roguelike.Event
 import Roguelike.WorldMap (WorldMap)
 
 data SubjectiveWorld = SubjectiveWorld { _personalMap :: WorldMap LocalID KnownEntity
+                                       , _myPosition :: Point
                                        }
-                     deriving (Generic, Default)
 
 makeLenses ''SubjectiveWorld
+
+instance Default SubjectiveWorld where
+  def = SubjectiveWorld { _personalMap = def
+                        , _myPosition = error "unknown position in SubjectiveWorld"
+                        }

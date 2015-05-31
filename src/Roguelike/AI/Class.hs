@@ -6,4 +6,5 @@ import Roguelike.Action
 import Roguelike.SubjectiveWorld
 
 instance AI a where
-  think :: SubjectiveWorld -> Creature -> TurnStatus -> a -> Event -> ([Action], a)
+  think :: SubjectiveWorld -> Creature -> a -> Event -> a
+  action :: TurnStatus -> a -> Action

@@ -16,12 +16,19 @@ import GHC.Generics (Generic)
 import Data.Aeson
 import Control.Lens
 
+import Roguelike.ID
 import Roguelike.Types
 
--- Add a simple Point index 
-data WorldMap id a = WorldMap { _objects :: Map id (Point, a)
-                              }
-                 deriving (Show, Generic, Default)
+data MapObject a = MapObject !Point !a
+
+-- Most common world map operations would be:
+-- 1) Search by ID
+-- 2) Search all entities near a Point
+-- TODO: More effectiveness!
+--       Add a simple Point index 
+data WorldMap a = WorldMap { _objects :: Map id (Point, a)
+                           }
+                deriving (Show, Generic, Default)
 
 makeLenses ''WorldMap
 
@@ -52,10 +59,10 @@ type instance Index (WorldMap id) = id
 type instance IxValue (WorldMap k a) = (Point, a)
 
 instance Ixed (WorldMap k a) where
-  ix k = idIndex . ix k
+  ix k = objects . ix k
 
 instance At (IndexedSet k a) where
-  at k = idIndex . at k
+  at k = objects . at k
 
 iptraverse :: Traversal (WorldMap id a) (WorldMap id b) (Point, a) (Point, b)
 iptraverse = objects . itraverse
@@ -67,8 +74,8 @@ filterPoint f = filter (first p) . M.toList . _objects
 byPoint :: Point -> WorldMap id a -> [(id, a)]
 byPoint p = filterPoint (== p)
 
-nearbyObjects :: Point -> Radius -> WorldMap id a -> [a]
-nearbyObjects p r = filterPoint ((<= r) . distanceP r)
+nearbyObjects :: Point -> Radius -> WorldMap id a -> [(id, a)]
+nearbyObjects p r = filterPoint (near r p)
 
 fromList :: [(id, (Point, a))] -> WorldMap id a
 fromList = WorldMap . M.fromList

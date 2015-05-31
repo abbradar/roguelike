@@ -1,5 +1,6 @@
 module Data.Aeson.Dynamic
        ( SomeObject(..)
+       , someObject
        , SomeObjectProxy(..)
        , someP
        , AllSomes
@@ -14,17 +15,22 @@ import Data.Maybe
 import Data.Proxy
 import Data.Typeable
 import Data.Text (Text)
+import Control.Lens
 import Data.Aeson
 import Data.Bimap (Bimap)
 import qualified Data.Bimap as B
+import qualified Data.HashMap as H
+
 import Data.IndexedSet (IndexedSet, IndexKey(..))
 import qualified Data.IndexedSet as I
-import qualified Data.HashMap as H
 
 type SomeObjectable a = (Typeable a, FromJSON a, ToJSON a)
 
 data SomeObject :: (* -> Constraint) -> * where
   SomeObject :: (constr a, SomeObjectable a) => a -> SomeObject constr
+
+someObject :: (constr a, SomeObjectable a, constr b, SomeObjectable b) => Prism (SomeObject a) (SomeObject b) a b
+someObject = prism' SomeObject (\(SomeObject a) -> cast a) 
 
 data SomeObjectProxy :: (* -> Constraint) -> * where
   SomeObjectProxy :: (constr a, SomeObjectable a) => Proxy a -> SomeObjectProxy constr

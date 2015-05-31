@@ -1,30 +1,29 @@
 module Roguelike.Event where
 
+import Data.Aeson
+
 import Roguelike.ID
 import Roguelike.Action
 import Roguelike.Item
 
-newtype LocalID = LocalID ID
-                deriving (Show, Eq)
-
-data CreatureAddress = Other LocalID | Myself
-                   deriving (Show, Eq)
+data CreatureAddress = Other CreatureID | Myself
+                     deriving (Show, Eq)
 
 type Damage = Int
 
--- Pretty useless for now
-data KnownEntity = KnownCreature
+-- Something like a global ID for now
+newtype Appearance = Appearance ID
+                   deriving (Show, Eq, Ord, FromJSON, ToJSON)
+
+data KnownEntity = KnownCreature Appearance
                  | KnownItem Item
-                 deriving (Show, FromJSON, ToJSON)
+                 deriving (Show)
 
 -- TODO: Maybe send only relative movements; let's conceal the real location!
-data Event = Appeared LocalID Point KnownEntity
-           | Updated LocalID KnownEntity
-           | Disappeared LocalID
+data Event = Appeared ID Point KnownEntity
+           | Updated ID KnownEntity
+           | Disappeared ID
            | Moved CreatureAddress Point
            | Striked CreatureAddress CreatureAddress (Maybe Damage)
            | Slain CreatureAddress
-           | Heard CreatureAddress Phrase
-           | Shealthed CreatureAddress
-           | DrawnOut CreatureAddress Item
            deriving (Show)

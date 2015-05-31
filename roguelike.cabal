@@ -29,6 +29,7 @@ executable roguelike
                      , lens
                      , containers
                      , unordered-containers
+                     , bimap
                      , data-default-generics
   default-extensions:  ViewPatterns
                      , GeneralizedNewtypeDeriving
