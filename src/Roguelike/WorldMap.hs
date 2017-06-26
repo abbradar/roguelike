@@ -1,4 +1,6 @@
-module Roguelike.WorldMap ( WorldMap
+module Roguelike.WorldMap ( MapObject(..)
+                          , point, object
+                          , WorldMap
                           , iptraverse
                           , byPoint
                           , nearbyObjects
@@ -16,19 +18,23 @@ import GHC.Generics (Generic)
 import Data.Aeson
 import Control.Lens
 
-import Roguelike.ID
 import Roguelike.Types
 
-data MapObject a = MapObject !Point !a
+data MapObject a = MapObject { _point :: Point
+                             , _object :: a
+                             }
+
+deriveJSON defaultOptions { fieldLabelModifier = tail } ''MapObject
+makeLenses ''MapObject
+
 
 -- Most common world map operations would be:
 -- 1) Search by ID
 -- 2) Search all entities near a Point
 -- TODO: More effectiveness!
 --       Add a simple Point index 
-data WorldMap a = WorldMap { _objects :: Map id (Point, a)
+data WorldMap a = WorldMap { _objects :: Map id (MapObject a)
                            }
-                deriving (Show, Generic, Default)
 
 makeLenses ''WorldMap
 
@@ -56,7 +62,7 @@ instance TraversableWithIndex id (WorldMap id) where
   itraverse = objects . itraverse . _2
 
 type instance Index (WorldMap id) = id
-type instance IxValue (WorldMap k a) = (Point, a)
+type instance IxValue (WorldMap k a) = MapObject a
 
 instance Ixed (WorldMap k a) where
   ix k = objects . ix k
@@ -64,12 +70,12 @@ instance Ixed (WorldMap k a) where
 instance At (IndexedSet k a) where
   at k = objects . at k
 
-iptraverse :: Traversal (WorldMap id a) (WorldMap id b) (Point, a) (Point, b)
+iptraverse :: Traversal (WorldMap id a) (WorldMap id b) (MapObject a) (MapObject b)
 iptraverse = objects . itraverse
 
 filterPoint :: (Point -> Bool) -> WorldMap id a -> [(id, a)]
 -- Slow!
-filterPoint f = filter (first p) . M.toList . _objects
+filterPoint f = filter (p . _point) . M.toList . _objects
 
 byPoint :: Point -> WorldMap id a -> [(id, a)]
 byPoint p = filterPoint (== p)
@@ -77,5 +83,5 @@ byPoint p = filterPoint (== p)
 nearbyObjects :: Point -> Radius -> WorldMap id a -> [(id, a)]
 nearbyObjects p r = filterPoint (near r p)
 
-fromList :: [(id, (Point, a))] -> WorldMap id a
+fromList :: [(id, MapObject a)] -> WorldMap id a
 fromList = WorldMap . M.fromList

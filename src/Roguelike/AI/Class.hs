@@ -1,10 +1,12 @@
 module Roguelike.AI.Class where
 
+import Control.Monad.Random
+
 import Roguelike.Event
 import Roguelike.Creature
 import Roguelike.Action
 import Roguelike.SubjectiveWorld
 
-instance AI a where
-  think :: SubjectiveWorld -> Creature -> a -> Event -> a
-  action :: TurnStatus -> a -> Action
+class AI a where
+  perceive :: MonadRandom m => SubjectiveWorld -> Creature -> a -> Event -> a
+  action :: MonadRandom m => TurnStatus -> a -> Action
